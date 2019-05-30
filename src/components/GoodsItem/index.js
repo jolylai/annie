@@ -21,23 +21,20 @@ class ClothingsItem extends Component {
         <View className="WhiteSpace" />
         <View className="hr" />
         {data.map(item => (
-          <View key={item.product_id}>
+          <View key={item._id}>
             <View className="WhiteSpace" />
             <View className="clothing">
               <View className="shop-img">
-                <Image mode="widthFix" src={item.imgUrl} />
+                <Image mode="widthFix" src={item.goods.imgUrl} />
               </View>
               <View className="content">
-                <View className="title p">{item.brand}</View>
-                <View className="info p">{item.name}</View>
-                <View className="size p">
-                  {`${item.spu} | ${item.specification || "均码"}`}
-                </View>
+                <View className="title p">商品名称：{item.goods.name}</View>
+                <View className="info p">商品数量：{item.number}</View>
               </View>
               <View className="edit">
                 <View
                   className="iconfont icon-delete"
-                  data-id={item.product_id}
+                  data-id={item.goods._id}
                   onClick={onDelete}
                 />
               </View>

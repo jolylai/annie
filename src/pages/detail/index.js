@@ -1,7 +1,6 @@
 import Taro, { Component } from "@tarojs/taro";
 import { connect } from "@tarojs/redux";
 import { View, Image, Button } from "@tarojs/components";
-import * as detailApi from "./service";
 import MySwiper from "../../components/MySwiper";
 import "./index.scss";
 
@@ -18,7 +17,7 @@ class Detail extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: "detail/query",
-      payload: { id: this.$router.params.id || "5cc0651ad7101e2c40fbb68f" }
+      payload: { id: this.$router.params.id || "5cef9f433af32381fcd42236" }
     });
   };
 
@@ -29,63 +28,29 @@ class Detail extends Component {
   }
 
   //加入衣袋
-  join = async () => {
-    if (!Taro.getStorageSync("access_token")) {
-      Taro.navigateTo({
-        url: "/pages/login/index"
-      });
-      return;
-    }
-    if (
-      this.state.detail.mode_id == 3 &&
-      (this.state.detail.enabled != 1 || this.state.detail.sale_stock == 0)
-    ) {
-      Taro.showToast({
-        title: "商品已售罄",
-        icon: "none"
-      });
-      return;
-    }
-    if (this.state.currentChooseId === "") {
-      Taro.showToast({
-        title: "请选择尺码",
-        icon: "none"
-      });
-      return;
-    }
-    if (this.state.detail.enabled == 1) {
-      const { detail, currentChooseId, currentChooseName } = this.state;
-      for (let item of this.props.items) {
-        if (item.product_id == detail.product_master_id) {
-          Taro.showToast({
-            title: "衣袋已存在该美衣~~",
-            icon: "none"
-          });
-          return;
-        }
+  join = async data => {
+    // if (!Taro.getStorageSync("access_token")) {
+    //   Taro.navigateTo({
+    //     url: "/pages/login/index"
+    //   });
+    //   return;
+    // }
+
+    const { dispatch } = this.props;
+    dispatch({
+      type: "detail/addToCart",
+      payload: {
+        user: "5cef8d4cbe2bd83fd4644059",
+        goods: data._id,
+        number: 1
       }
-      this.props.dispatch({
-        type: "cart/save",
-        payload: {
-          items: [
-            ...this.props.items,
-            {
-              brand: detail.brand,
-              images: detail.image[0],
-              name: detail.name,
-              product_id: detail.product_master_id,
-              product_price: detail.market_price,
-              specification: currentChooseName,
-              spu: currentChooseId,
-              type: detail.type_id
-            }
-          ]
-        }
-      });
-      Taro.showToast({
-        title: "加入衣袋成功"
-      });
-    }
+    }).then(res => {
+      if (res.status) {
+        Taro.showToast({
+          title: "加入衣袋成功"
+        });
+      }
+    });
   };
 
   showClothesDetail = () => {
@@ -122,12 +87,11 @@ class Detail extends Component {
 
   render() {
     const { items, data } = this.props;
-    const banner = [{ imgUrl: data.imgUrl }];
     return (
       <View className="detail-page">
         <View className="image-box-wrap">
           <View className="image-box clearfix">
-            <MySwiper banner={banner} />
+            <MySwiper banner={data.banner} />
             <View className="share-btn">
               <Button open-type="share" />
             </View>
@@ -138,7 +102,7 @@ class Detail extends Component {
             </View>
           )}
 
-          {!data.enabled && (
+          {data.disabled && (
             <View className="unable">
               <View className="sales-end">下架</View>
             </View>
@@ -147,12 +111,8 @@ class Detail extends Component {
         <View className="container">
           {/* -- 商品信息 -- */}
           <View className="info-business-card">
-            <View className="name">{data.brand}</View>
+            <View className="name">{data.name}</View>
             <View className="model">参考价 ¥{data.price}</View>
-          </View>
-          <View className="product_name">
-            <View>VIP</View>
-            {data.name}
           </View>
           <View className="code">{data.product_spu}</View>
           {/* 买手点评 */}
@@ -196,7 +156,9 @@ class Detail extends Component {
           </View>
           <View
             className={false ? "join join-disabled" : "join"}
-            onClick={this.join}
+            onClick={() => {
+              this.join(data);
+            }}
           >
             加入衣袋
           </View>

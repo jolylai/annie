@@ -1,24 +1,20 @@
-import * as homeApi from "./service";
-import { goodsList } from "./service";
+import { goodsList, bannerList } from "./service";
 
 export default {
   namespace: "home",
   state: {
     banner: [],
-    brands: [],
-    products_list: [],
     goodsList: [],
     page: 1
   },
   effects: {
-    *load(_, { call, put }) {
-      const { status, data } = yield call(homeApi.homepage, {});
-      if (status === "ok") {
+    *qureyBanner(_, { call, put }) {
+      const response = yield call(bannerList);
+      if (response.status === true) {
         yield put({
           type: "updateState",
           payload: {
-            banner: data.banner,
-            brands: data.brands
+            banner: response.body.map(goods => goods.imgUrl)
           }
         });
       }
@@ -31,10 +27,10 @@ export default {
         pageSize: 10
       });
       if (response.status) {
-        const { list } = response.body;
+        const { body } = response;
         yield put({
           type: "updateState",
-          payload: { goodsList: [...prevGoodsList, ...list] }
+          payload: { goodsList: [...prevGoodsList, ...body] }
         });
       }
     }

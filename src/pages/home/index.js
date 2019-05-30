@@ -23,6 +23,9 @@ class Index extends Component {
     const { dispatch } = this.props;
     const { pageNumber } = this.state;
     dispatch({
+      type: "home/qureyBanner"
+    });
+    dispatch({
       type: "home/queryGoodsList",
       payload: {
         pageNumber,
@@ -52,7 +55,6 @@ class Index extends Component {
 
   // 小程序上拉加载
   onReachBottom() {
-    console.log("shangla");
     const { dispatch, goodsList } = this.props;
     const { pageNumber } = this.state;
 
@@ -73,14 +75,10 @@ class Index extends Component {
         <View className="nav-list">
           {brands.map((item, index) => (
             <View className="nav-item" key={index}>
-              <Image mode="widthFix" src={item.image_src} />
+              <Image mode="widthFix" src={item} />
             </View>
           ))}
         </View>
-        {/* 流量主广告 */}
-        {Taro.getEnv() === Taro.ENV_TYPE.WEAPP && (
-          <ad unit-id="adunit-dc1c0a38156fa412" />
-        )}
         <Text className="recommend">为你推荐</Text>
         <GoodsList list={goodsList} loading={effects["home/queryGoodsList"]} />
       </View>

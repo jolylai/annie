@@ -17,6 +17,7 @@ export default options => {
     method: method.toUpperCase()
   }).then(res => {
     const { statusCode, data } = res;
+
     if (statusCode >= 200 && statusCode < 300) {
       if (!noConsole) {
         console.log(

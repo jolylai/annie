@@ -1,7 +1,6 @@
 import Taro, { Component } from "@tarojs/taro";
 import { connect } from "@tarojs/redux";
 import { View, Image, Button, Text } from "@tarojs/components";
-import ClothingsItem from "../../components/ClothingsItem";
 import GoodsItem from "../../components/GoodsItem";
 import "./index.scss";
 
@@ -10,46 +9,20 @@ import "./index.scss";
 }))
 class Cart extends Component {
   config = {
-    navigationBarTitleText: "衣袋"
+    navigationBarTitleText: "购物车"
   };
 
-  goHome() {
-    if (Taro.getEnv() === Taro.ENV_TYPE.WEB) {
-      Taro.navigateTo({
-        url: "/pages/home/index"
-      });
-    } else {
-      Taro.switchTab({
-        url: "/pages/home/index"
-      });
-    }
-  }
-
-  clothingNumExplain() {
-    const content =
-      "“会员每次免费租4件”可付费多租一件，5件封顶；VIP每次免费可租4件会员+1件VIP美衣或者2件会员+2件VIP美衣，或者3件VIP美衣；可付费多租1-2件，5件封顶；";
-    Taro.showModal({
-      content,
-      showCancel: false
+  queryCartGoods(params) {
+    const { dispatch } = this.props;
+    return dispatch({
+      type: "cart/query",
+      payload: params
     });
   }
 
-  // 删除美衣
-  onDeleteClothing = e => {
-    const id = e.currentTarget.dataset.id;
-    Taro.showModal({
-      content: "是否删除该美衣？"
-    }).then(res => {
-      if (res.confirm) {
-        this.props.dispatch({
-          type: "cart/deleteClothes",
-          payload: {
-            id
-          }
-        });
-      }
-    });
-  };
+  componentDidMount() {
+    this.queryCartGoods({ userId: "5cef8d4cbe2bd83fd4644059" });
+  }
 
   componentDidShow() {
     // 设置衣袋小红点
@@ -65,6 +38,52 @@ class Cart extends Component {
     }
   }
 
+  goHome() {
+    if (Taro.getEnv() === Taro.ENV_TYPE.WEB) {
+      Taro.navigateTo({
+        url: "/pages/home/index"
+      });
+    } else {
+      Taro.switchTab({
+        url: "/pages/home/index"
+      });
+    }
+  }
+
+  onDeleteGoods = e => {
+    const id = e.currentTarget.dataset.id;
+    const { dispatch } = this.props;
+    Taro.showModal({
+      content: "是否删除该商品？"
+    }).then(res => {
+      if (res.confirm) {
+        Taro.showLoading({
+          title: "Loading"
+        })
+          .then(() =>
+            dispatch({
+              type: "cart/deleteOneGoods",
+              payload: {
+                goodsId: id
+              }
+            })
+          )
+          .then(({ status }) => {
+            if (!status) {
+              return Promise.reject("删除失败");
+            }
+            return this.queryCartGoods({ userId: "5cef8d4cbe2bd83fd4644059" });
+          })
+          .then(() => {
+            Taro.hideLoading();
+          })
+          .catch(() => {
+            Taro.hideLoading();
+          });
+      }
+    });
+  };
+
   buy() {
     Taro.showToast({
       title: "衣袋尚未激活，下单失败～～",
@@ -73,19 +92,8 @@ class Cart extends Component {
   }
 
   render() {
-    const { items } = this.props;
-    const data = [
-      {
-        _id: "1",
-        imgUrl: "https://gradientjoy.com/200x300",
-        name: "鞋子"
-      },
-      {
-        _id: "1",
-        imgUrl: "https://gradientjoy.com/200x300",
-        name: "鞋子"
-      }
-    ];
+    const { items, cartGoods: data } = this.props;
+
     const isH5 = Taro.getEnv() === Taro.ENV_TYPE.WEB;
     return (
       <View className="cart-page">
@@ -101,7 +109,7 @@ class Cart extends Component {
           </View>
         ) : (
           <View className="isLogin">
-            <GoodsItem data={data} onDelete={this.onDeleteClothing} />
+            <GoodsItem data={data} onDelete={this.onDeleteGoods} />
             <View className="bottom-count" style={!isH5 && "bottom:0;"}>
               <View className="fj">
                 <View>

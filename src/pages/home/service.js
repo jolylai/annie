@@ -1,21 +1,14 @@
-import Request from "../../utils/request";
+import request from "../../utils/request";
 
-export const homepage = data =>
-  Request({
-    url: "/homepage-v3",
-    method: "GET",
-    data
-  });
-
-export const product = data =>
-  Request({
-    url: "/product/filter",
+export const bannerList = data =>
+  request({
+    url: "/api/goods/recommend",
     method: "GET",
     data
   });
 
 export const goodsList = data =>
-  Request({
+  request({
     url: "/api/goods/list",
     method: "POST",
     data

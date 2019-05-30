@@ -27,7 +27,7 @@ export default class MySwiper extends Component {
       >
         {banner.map((item, index) => (
           <SwiperItem key={index}>
-            <Image mode="widthFix" src={item.imgUrl} />
+            <Image mode="widthFix" src={item} />
           </SwiperItem>
         ))}
       </Swiper>

@@ -1,4 +1,4 @@
-import { query } from "./service";
+import { query, addToCart } from "./service";
 
 export default {
   namespace: "detail",
@@ -16,6 +16,11 @@ export default {
           }
         });
       }
+    },
+
+    *addToCart({ payload }, { call }) {
+      const response = yield call(addToCart, payload);
+      return response;
     }
   },
   reducers: {
