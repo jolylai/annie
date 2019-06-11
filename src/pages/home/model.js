@@ -4,6 +4,7 @@ export default {
   namespace: "home",
   state: {
     banner: [],
+    brands: [],
     goodsList: [],
     page: 1
   },

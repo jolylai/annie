@@ -22,6 +22,7 @@ class Index extends Component {
   componentDidMount = () => {
     const { dispatch } = this.props;
     const { pageNumber } = this.state;
+    console.log("dispath");
     dispatch({
       type: "home/qureyBanner"
     });

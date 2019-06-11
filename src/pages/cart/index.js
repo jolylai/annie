@@ -94,7 +94,7 @@ class Cart extends Component {
     });
   };
 
-  buy() {
+  buy = () => {
     const { dispatch, cartGoods } = this.props;
     const cart = cartGoods.map(item => item._id);
     dispatch({
@@ -112,11 +112,10 @@ class Cart extends Component {
         });
       }
     });
-  }
+  };
 
   render() {
     const { cartGoods: data } = this.props;
-    console.log("data", data);
 
     const isH5 = Taro.getEnv() === Taro.ENV_TYPE.WEB;
     return (

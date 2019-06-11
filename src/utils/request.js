@@ -14,7 +14,8 @@ export default options => {
     header: {
       "Content-Type": "application/json"
     },
-    method: method.toUpperCase()
+    method: method.toUpperCase(),
+    credentials: "include"
   }).then(res => {
     const { statusCode, data } = res;
 
