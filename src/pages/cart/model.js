@@ -1,4 +1,4 @@
-import { query, deleteOne } from "./service";
+import { query, deleteOne, createOrder } from "./service";
 
 export default {
   namespace: "cart",
@@ -20,6 +20,11 @@ export default {
 
     *deleteOneGoods({ payload }, { call }) {
       const response = yield call(deleteOne, payload);
+      return response;
+    },
+
+    *createOrder({ payload }, { call }) {
+      const response = yield call(createOrder, payload);
       return response;
     }
   },

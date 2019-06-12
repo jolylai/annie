@@ -85,6 +85,13 @@ class Cart extends Component {
   };
 
   buy() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "cart/createOrder",
+      payload: {
+        user: "5cef8d4cbe2bd83fd4644059"
+      }
+    });
     Taro.showToast({
       title: "衣袋尚未激活，下单失败～～",
       icon: "none"
