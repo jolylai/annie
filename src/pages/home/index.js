@@ -22,18 +22,6 @@ class Index extends Component {
   componentDidMount = () => {
     const { dispatch } = this.props;
     const { pageNumber } = this.state;
-    // Taro.login({
-    //   timeout: 2000,
-    //   success(res) {
-    //     console.log("res: ", res);
-    //   },
-    //   fail(error) {
-    //     console.log("error: ", error);
-    //   },
-    //   complete(com) {
-    //     console.log("com", com);
-    //   }
-    // });
     dispatch({
       type: "home/qureyBanner"
     });

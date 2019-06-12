@@ -86,7 +86,7 @@ class Detail extends Component {
   }
 
   render() {
-    const { items, data } = this.props;
+    const { items = [], data } = this.props;
     return (
       <View className="detail-page">
         <View className="image-box-wrap">

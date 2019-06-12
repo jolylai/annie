@@ -21,21 +21,31 @@ class Cart extends Component {
   }
 
   componentDidMount() {
+    console.log("cat mount");
     this.queryCartGoods({ userId: "5cef8d4cbe2bd83fd4644059" });
   }
 
   componentDidShow() {
     // 设置衣袋小红点
-    if (this.props.items.length > 0) {
-      Taro.setTabBarBadge({
-        index: 1,
-        text: String(this.props.items.length)
-      });
-    } else {
-      Taro.removeTabBarBadge({
-        index: 1
-      });
-    }
+    // if (this.props.cartGoods.length > 0) {
+    //   Taro.setTabBarBadge({
+    //     index: 1,
+    //     text: String(this.props.cartGoods.length)
+    //   });
+    // } else {
+    //   Taro.removeTabBarBadge({
+    //     index: 1
+    //   });
+    // }
+  }
+
+  calGoodsAmount(goodsArr) {
+    const amount = goodsArr.reduce((result, item) => {
+      const { goods = {}, number = 0 } = item;
+      const { price = 0 } = goods;
+      return result + price * number;
+    }, 0);
+    return amount.toFixed(2);
   }
 
   goHome() {
@@ -84,22 +94,28 @@ class Cart extends Component {
     });
   };
 
-  buy() {
-    const { dispatch } = this.props;
+  buy = () => {
+    const { dispatch, cartGoods } = this.props;
+    const cart = cartGoods.map(item => item._id);
     dispatch({
       type: "cart/createOrder",
       payload: {
+        cart,
         user: "5cef8d4cbe2bd83fd4644059"
       }
+    }).then(res => {
+      if (res.status) {
+        this.queryCartGoods({ userId: "5cef8d4cbe2bd83fd4644059" });
+        Taro.showToast({
+          title: "下单成功",
+          icon: "none"
+        });
+      }
     });
-    Taro.showToast({
-      title: "衣袋尚未激活，下单失败～～",
-      icon: "none"
-    });
-  }
+  };
 
   render() {
-    const { items, cartGoods: data } = this.props;
+    const { cartGoods: data } = this.props;
 
     const isH5 = Taro.getEnv() === Taro.ENV_TYPE.WEB;
     return (
@@ -121,14 +137,14 @@ class Cart extends Component {
               <View className="fj">
                 <View>
                   合计：
-                  <Text className={!items.length ? "disabled price" : "price"}>
-                    0.00
+                  <Text className={!data.length ? "disabled price" : "price"}>
+                    {this.calGoodsAmount(data)}
                   </Text>
                 </View>
                 <Button
                   className="cart-btn"
                   onClick={this.buy}
-                  disabled={!items.length}
+                  disabled={!data.length}
                 >
                   下单
                 </Button>
