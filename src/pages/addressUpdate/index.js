@@ -2,7 +2,7 @@ import Taro, { Component } from "@tarojs/taro";
 import { View, Input, Image, Text, Picker } from "@tarojs/components";
 import { connect } from "@tarojs/redux";
 
-// import AddressPicker from "../../components/AddressPicker";
+import AddressPicker from "../../components/AddressPicker";
 import address from "../../utils/city";
 import "./index.scss";
 
@@ -69,20 +69,15 @@ class Addressupdate extends Component {
 
   // 保存提交
   submit = () => {
-    const {
-      showValue,
-      contact_name,
-      contact_mobile,
-      address_detail
-    } = this.props;
-    if (contact_name === "") {
+    const { showValue, name, mobile, detail } = this.props;
+    if (name === "") {
       Taro.showToast({
         title: "请输入收货人",
         icon: "none"
       });
       return;
     }
-    if (!/^1[234578]\d{9}$/.test(contact_mobile)) {
+    if (!/^1[234578]\d{9}$/.test(mobile)) {
       Taro.showToast({
         title: "手机号格式不正确",
         icon: "none"
@@ -96,7 +91,7 @@ class Addressupdate extends Component {
       });
       return;
     }
-    if (address_detail === "") {
+    if (detail === "") {
       Taro.showToast({
         title: "请输入详细地址",
         icon: "none"
@@ -107,9 +102,9 @@ class Addressupdate extends Component {
       type: "addressUpdate/submit",
       payload: {
         showValue,
-        contact_name,
-        contact_mobile,
-        address_detail
+        name,
+        mobile,
+        detail
       }
     });
   };
@@ -133,9 +128,9 @@ class Addressupdate extends Component {
       districts,
       pickerValue,
       showValue,
-      contact_name,
-      contact_mobile,
-      address_detail,
+      name,
+      mobile,
+      detail,
       provinces,
       cities,
       areas
@@ -149,17 +144,21 @@ class Addressupdate extends Component {
         <View className="form">
           <Input
             placeholder="收件人"
-            id="contact_name"
-            value={contact_name}
+            id="name"
+            value={name}
             onInput={this.update}
           />
           <Input
             type="number"
             maxLength="11"
             placeholder="手机号码"
-            id="contact_mobile"
-            value={contact_mobile}
+            id="mobile"
+            value={mobile}
             onInput={this.update}
+          />
+          <AddressPicker
+            initValue={[110000, 110000, 110100]}
+            value={[0, 0, 0]}
           />
           <Picker
             className="picker"
@@ -184,8 +183,8 @@ class Addressupdate extends Component {
           </Picker>
           <Input
             placeholder="详细地址"
-            id="address_detail"
-            value={address_detail}
+            id="detail"
+            value={detail}
             onInput={this.update}
           />
         </View>

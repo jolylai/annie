@@ -1,25 +1,25 @@
-import Request from '../../utils/request';
+import Request from "../../utils/request";
 
 // 获取省市区列表
-export const getDistricts = data =>
+export const createAddress = data =>
   Request({
-    url: '/common/configs',
-    method: 'GET',
-    data,
+    url: "/api/address/create",
+    method: "POST",
+    data
   });
 
 // 更新地址
 export const updateAddress = data =>
   Request({
-    url: '/user/address',
-    method: 'POST',
-    data,
+    url: "/user/address/update",
+    method: "POST",
+    data
   });
 
 // 删除地址
 export const removeAddress = data =>
   Request({
-    url: '/user/address',
-    method: 'DELETE',
-    data,
+    url: "/user/address/:id",
+    method: "DELETE",
+    data
   });
