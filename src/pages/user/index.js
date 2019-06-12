@@ -1,43 +1,44 @@
-import Taro, { Component } from '@tarojs/taro';
-import { View, Image, Text, Icon } from '@tarojs/components';
-import { connect } from '@tarojs/redux';
-import './index.scss';
-import message_img from '../../images/user/message.png';
-import avatar_img from '../../images/user/avatar.png';
-import coupon_img from '../../images/user/coupon.png';
-import about_img from '../../images/user/about.png';
-import address_img from '../../images/user/address.png';
+import Taro, { Component } from "@tarojs/taro";
+import { View, Image, Text, Icon } from "@tarojs/components";
+import { connect } from "@tarojs/redux";
+import "./index.scss";
+import message_img from "../../images/user/message.png";
+import avatar_img from "../../images/user/avatar.png";
+import coupon_img from "../../images/user/coupon.png";
+import about_img from "../../images/user/about.png";
+import address_img from "../../images/user/address.png";
 
 @connect(({ user, common }) => ({
   ...user,
-  ...common,
+  ...common
 }))
 class User extends Component {
   config = {
-    navigationBarTitleText: '我的',
+    navigationBarTitleText: "我的"
   };
 
   goPage = e => {
-    if (
-      e.currentTarget.dataset.url == '/pages/login/index' &&
-      this.props.access_token
-    ) {
-      return;
-    }
+    // if (
+    //   e.currentTarget.dataset.url == "/pages/login/index" &&
+    //   this.props.access_token
+    // ) {
+    //   return;
+    // }
     Taro.navigateTo({
-      url: e.currentTarget.dataset.url,
+      url: e.currentTarget.dataset.url
     });
   };
 
   goToPage = e => {
-    if (!this.props.access_token) {
-      Taro.navigateTo({
-        url: '/pages/login/index',
-      });
-      return;
-    }
+    console.log("e: ", e);
+    // if (!this.props.access_token) {
+    //   Taro.navigateTo({
+    //     url: "/pages/login/index"
+    //   });
+    //   return;
+    // }
     Taro.navigateTo({
-      url: e.currentTarget.dataset.url,
+      url: e.currentTarget.dataset.url
     });
   };
 
@@ -45,42 +46,42 @@ class User extends Component {
     e.stopPropagation();
     if (!this.props.access_token) {
       Taro.navigateTo({
-        url: '/pages/login/index',
+        url: "/pages/login/index"
       });
       return;
     }
     Taro.showModal({
-      content: '是否退出当前账号？',
+      content: "是否退出当前账号？"
     }).then(res => {
       if (res.confirm) {
-        Taro.removeStorageSync('user_info');
-        Taro.removeStorageSync('access_token');
+        Taro.removeStorageSync("user_info");
+        Taro.removeStorageSync("access_token");
         this.props.dispatch({
-          type: 'cart/init',
+          type: "cart/init"
         });
         this.props.dispatch({
-          type: 'common/save',
+          type: "common/save",
           payload: {
-            access_token: '',
-            invitation_code: '',
-            mobile: '',
-            nickname: '',
-            new_user: '',
-            is_has_buy_card: '',
-            erroMessage: '',
-          },
+            access_token: "",
+            invitation_code: "",
+            mobile: "",
+            nickname: "",
+            new_user: "",
+            is_has_buy_card: "",
+            erroMessage: ""
+          }
         });
         this.props.dispatch({
-          type: 'login/save',
+          type: "login/save",
           payload: {
-            access_token: '',
-            invitation_code: '',
-            mobile: '',
-            nickname: '',
-            new_user: '',
-            is_has_buy_card: '',
-            erroMessage: '',
-          },
+            access_token: "",
+            invitation_code: "",
+            mobile: "",
+            nickname: "",
+            new_user: "",
+            is_has_buy_card: "",
+            erroMessage: ""
+          }
         });
       }
     });
@@ -97,8 +98,8 @@ class User extends Component {
             onClick={this.goPage}
           >
             <View className="left">
-              <View className={mobile ? 'name black' : 'name '}>
-                {nickname || '请登录 >'}
+              <View className={mobile ? "name black" : "name "}>
+                {nickname || "请登录 >"}
               </View>
               <View>
                 <View
@@ -141,7 +142,7 @@ class User extends Component {
             <View className="type type0">
               <View className="operation">
                 <View className="txt">
-                  {mobile ? 'VIP会员用户' : '您还不是会员'}
+                  {mobile ? "VIP会员用户" : "您还不是会员"}
                 </View>
                 {!mobile && (
                   <View
@@ -207,4 +208,4 @@ class User extends Component {
   }
 }
 
-export default User
+export default User;

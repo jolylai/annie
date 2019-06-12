@@ -1,85 +1,69 @@
-import Taro, { Component } from '@tarojs/taro';
-import { View, Input, Image, Text, Picker } from '@tarojs/components';
-import { connect } from '@tarojs/redux';
-import './index.scss';
+import Taro, { Component } from "@tarojs/taro";
+import { View, Input, Image, Text, Picker } from "@tarojs/components";
+import { connect } from "@tarojs/redux";
+
+// import AddressPicker from "../../components/AddressPicker";
+import address from "../../utils/city";
+import "./index.scss";
 
 @connect(({ addressUpdate }) => ({
-  ...addressUpdate,
+  ...addressUpdate
 }))
 class Addressupdate extends Component {
   config = {
-    navigationBarTitleText: '',
+    navigationBarTitleText: ""
   };
 
-  componentDidMount = () => {
-    this.props.dispatch({
-      type: 'addressUpdate/getDistricts',
-      payload: {
-        send_cities: 0,
-      },
-    });
-  };
+  componentDidMount = () => {};
 
   // picker选择数据动态渲染
-  onColumnchange = e => {
+  handleColumnchange = e => {
     const { column, value } = e.detail;
-    const { cities, districts } = this.props;
-    const arr = JSON.parse(JSON.stringify(districts));
-    if (column == 0) {
-      arr[1] = [];
-      arr[2] = [];
-      cities[value].cities.forEach(item => {
-        arr[1].push({
-          key: item.key,
-          name: item.name,
-        });
+    const { dispatch, cities, provinces } = this.props;
+
+    // 如果省份选择项和之前不一样，表示滑动了省份，此时市默认是省的第一组数据，
+    if (column === 0) {
+      const { id } = provinces[value];
+      dispatch({
+        type: "addressUpdate/save",
+        payload: {
+          cities: address.cities[id],
+          areas: address.areas[address.cities[id][0].id]
+        }
       });
-      cities[value].cities[0].regions.forEach(item => {
-        arr[2].push({
-          key: item.key,
-          name: item.name,
-        });
-      });
-    }
-    if (column == 1) {
-      arr[2] = [];
-      cities[value].cities[0].regions.forEach(item => {
-        arr[2].push({
-          key: item.key,
-          name: item.name,
-        });
+    } else if (column === 1) {
+      // 滑动选择了第二项数据，即市，此时区显示省市对应的第一组数据
+      const { id } = cities[value];
+      dispatch({
+        type: "addressUpdate/save",
+        payload: {
+          areas: address.areas[id]
+        }
       });
     }
-    this.props.dispatch({
-      type: 'addressUpdate/save',
-      payload: {
-        districts: arr,
-      },
-    });
   };
 
   // picker赋值
   onChange = e => {
     const { value } = e.detail;
-    const { cities } = this.props;
-    const detail = cities[value[0]].cities[value[1]].regions[value[2]];
+
     this.props.dispatch({
-      type: 'addressUpdate/save',
+      type: "addressUpdate/save",
       payload: {
-        pickerValue: value,
-        showValue: {
-          region_code: detail.key,
-          region_name: detail.fullname,
-        },
-      },
+        pickerValue: value
+        // showValue: {
+        //   region_code: detail.key,
+        //   region_name: detail.fullname
+        // }
+      }
     });
   };
 
   update = event => {
     const { value, id } = event.target;
     this.props.dispatch({
-      type: 'addressUpdate/save',
-      payload: { [id]: value },
+      type: "addressUpdate/save",
+      payload: { [id]: value }
     });
   };
 
@@ -89,55 +73,55 @@ class Addressupdate extends Component {
       showValue,
       contact_name,
       contact_mobile,
-      address_detail,
+      address_detail
     } = this.props;
-    if (contact_name === '') {
+    if (contact_name === "") {
       Taro.showToast({
-        title: '请输入收货人',
-        icon: 'none',
+        title: "请输入收货人",
+        icon: "none"
       });
       return;
     }
     if (!/^1[234578]\d{9}$/.test(contact_mobile)) {
       Taro.showToast({
-        title: '手机号格式不正确',
-        icon: 'none',
+        title: "手机号格式不正确",
+        icon: "none"
       });
       return;
     }
-    if (showValue.region_name === '') {
+    if (showValue.region_name === "") {
       Taro.showToast({
-        title: '请选择收货地址',
-        icon: 'none',
+        title: "请选择收货地址",
+        icon: "none"
       });
       return;
     }
-    if (address_detail === '') {
+    if (address_detail === "") {
       Taro.showToast({
-        title: '请输入详细地址',
-        icon: 'none',
+        title: "请输入详细地址",
+        icon: "none"
       });
       return;
     }
     this.props.dispatch({
-      type: 'addressUpdate/submit',
+      type: "addressUpdate/submit",
       payload: {
         showValue,
         contact_name,
         contact_mobile,
-        address_detail,
-      },
+        address_detail
+      }
     });
   };
 
   // 删除地址
   delete = () => {
     Taro.showModal({
-      content: '是否删除该地址？',
+      content: "是否删除该地址？"
     }).then(res => {
       if (res.confirm) {
         this.props.dispatch({
-          type: 'addressUpdate/removeAddress',
+          type: "addressUpdate/removeAddress"
         });
       }
     });
@@ -152,11 +136,15 @@ class Addressupdate extends Component {
       contact_name,
       contact_mobile,
       address_detail,
+      provinces,
+      cities,
+      areas
     } = this.props;
+
     return (
       <View className="addressUpdate-page">
         <View className="head">
-          {addressId && addressId !== '' ? '编辑地址' : '添加地址'}
+          {addressId && addressId !== "" ? "编辑地址" : "添加地址"}
         </View>
         <View className="form">
           <Input
@@ -177,12 +165,12 @@ class Addressupdate extends Component {
             className="picker"
             mode="multiSelector"
             rangeKey="name"
-            range={districts}
-            onColumnchange={this.onColumnchange}
+            range={[provinces, cities, areas]}
+            onColumnChange={this.handleColumnchange}
             onChange={this.onChange}
             value={pickerValue}
           >
-            {showValue.region_name == '' ? (
+            {showValue.region_name == "" ? (
               <View className="label">
                 省、市、区
                 <View className="iconfont icon-more arrow" />
@@ -202,11 +190,11 @@ class Addressupdate extends Component {
           />
         </View>
         <View className="bottom-btn">
-          {addressId && addressId !== '' && (
+          {addressId && addressId !== "" && (
             <View className="confirm remove" onClick={this.delete}>
               <Image
                 mode="widthFix"
-                src={require('../../images/icon/times.png')}
+                src={require("../../images/icon/times.png")}
               />
               <Text>删除</Text>
             </View>
@@ -214,7 +202,7 @@ class Addressupdate extends Component {
           <View className="confirm" onClick={this.submit}>
             <Image
               mode="widthFix"
-              src={require('../../images/icon/check.png')}
+              src={require("../../images/icon/check.png")}
             />
             <Text>保存</Text>
           </View>
