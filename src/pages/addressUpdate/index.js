@@ -157,8 +157,8 @@ class Addressupdate extends Component {
             onInput={this.update}
           />
           <AddressPicker
-            initValue={[110000, 110000, 110100]}
-            value={[0, 0, 0]}
+            value={[110000, 110000, 110100]}
+            // value={[0, 0, 0]}
           />
           <Picker
             className="picker"

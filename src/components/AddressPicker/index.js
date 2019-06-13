@@ -11,9 +11,10 @@ class AddressPicker extends Component {
     areas: []
   };
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props) {
+    console.log("get");
     const { value } = props;
-    const [provinceId, cityId, areaId] = value;
+    const [provinceId, cityId] = value;
     const cities = address.cities[provinceId];
     const areas = address.areas[cityId];
     return { cities, areas };
@@ -21,7 +22,8 @@ class AddressPicker extends Component {
 
   onColumnchange = e => {
     const { column, value } = e.detail;
-    const { provinces, cities, areas } = this.state;
+    console.log("column: ", column);
+    const { provinces, cities } = this.state;
     if (column === 0) {
       const curPrivinceId = provinces[value].id;
       const newCities = address.cities[curPrivinceId];
@@ -36,7 +38,9 @@ class AddressPicker extends Component {
   };
 
   onChange = e => {
-    console.log("chnage");
+    const { value } = e.detail;
+    const { onChange } = this.props;
+    onChange(value);
   };
 
   render() {
@@ -48,7 +52,7 @@ class AddressPicker extends Component {
         mode="multiSelector"
         rangeKey="name"
         range={[provinces, cities, areas]}
-        onColumnchange={this.onColumnchange}
+        onColumnChange={this.onColumnchange}
         onChange={this.onChange}
         value={value}
       >
