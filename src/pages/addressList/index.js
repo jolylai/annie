@@ -1,71 +1,61 @@
-import Taro, { Component } from '@tarojs/taro';
-import { View, Text, Image } from '@tarojs/components';
-import { connect } from '@tarojs/redux';
-import './index.scss';
+import Taro, { Component } from "@tarojs/taro";
+import { View, Text, Image } from "@tarojs/components";
+import { connect } from "@tarojs/redux";
+import "./index.scss";
 
 @connect(({ addressList }) => ({
-  ...addressList,
+  ...addressList
 }))
 class Addresslist extends Component {
   config = {
-    navigationBarTitleText: '收货地址',
+    navigationBarTitleText: "收货地址"
   };
 
   componentDidMount = () => {
     this.props.dispatch({
-      type: 'addressList/getAddressList',
+      type: "addressList/getAddressList"
     });
   };
 
   componentDidShow = () => {
     this.props.dispatch({
-      type: 'addressList/getAddressList',
+      type: "addressList/getAddressList"
     });
   };
 
   addressUpdate = () => {
     this.props.dispatch({
-      type: 'addressUpdate/save',
+      type: "addressUpdate/save",
       payload: {
-        addressId: '',
+        addressId: "",
         showValue: {
-          region_code: '',
-          region_name: '',
+          region_code: "",
+          region_name: ""
         },
-        contact_name: '',
-        contact_mobile: '',
-        address_detail: '',
-      },
+        contact_name: "",
+        contact_mobile: "",
+        address_detail: ""
+      }
     });
     Taro.navigateTo({
-      url: '/pages/addressUpdate/index',
+      url: "/pages/addressUpdate/index"
     });
   };
 
   addressEdit = e => {
-    const {
-      id,
-      region_code,
-      region_name,
-      contact_name,
-      contact_mobile,
-      address_detail,
-    } = e.currentTarget.dataset;
+    const { id, name, mobile, detail, value } = e.currentTarget.dataset;
     this.props.dispatch({
-      type: 'addressUpdate/save',
+      type: "addressUpdate/save",
       payload: {
+        name,
+        mobile,
+        detail,
         addressId: id,
-        showValue: {
-          region_code,
-          region_name,
-        },
-        contact_name,
-        contact_mobile,
-        address_detail,
-      },
+        addressPickerValue: value.split(",")
+      }
     });
     Taro.navigateTo({
-      url: '/pages/addressUpdate/index',
+      url: "/pages/addressUpdate/index"
     });
   };
 
@@ -75,25 +65,26 @@ class Addresslist extends Component {
       <View className="addressList-page">
         {addressList.length > 0 ? (
           addressList.map(item => (
-            <View className="content" key={item.id}>
+            <View className="content" key={item._id}>
               <View className="info">
                 <View className="contact">
-                  <Text className="name">{item.contact_name}</Text>
-                  <Text className="mobile">{item.contact_mobile}</Text>
+                  <Text className="name">{item.name}</Text>
+                  <Text className="mobile">{item.mobile}</Text>
                 </View>
                 <View className="region">
-                  <View className="name">{item.region_name}</View>
-                  <View className="detail">{item.address_detail}</View>
+                  <View className="name">{`${item.provinceName} ${
+                    item.cityName
+                  } ${item.areaName}`}</View>
+                  <View className="detail">{item.detail}</View>
                 </View>
               </View>
               <View
                 className="edit"
-                data-id={item.id}
-                data-region_code={item.region_code}
-                data-region_name={item.region_name}
-                data-contact_name={item.contact_name}
-                data-contact_mobile={item.contact_mobile}
-                data-address_detail={item.address_detail}
+                data-id={item._id}
+                data-name={item.name}
+                data-mobile={item.mobile}
+                data-value={[item.provinceId, item.cityId, item.areaId]}
+                data-detail={item.detail}
                 onClick={this.addressEdit}
               >
                 <Image
@@ -112,7 +103,7 @@ class Addresslist extends Component {
           </View>
         )}
         <View className="add" onClick={this.addressUpdate}>
-          <Image mode="widthFix" src={require('../../images/icon/add.png')} />
+          <Image mode="widthFix" src={require("../../images/icon/add.png")} />
           <Text>添加地址</Text>
         </View>
       </View>

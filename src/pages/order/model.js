@@ -1,24 +1,23 @@
-import { queryAddressList } from "./service";
+import { query } from "./service";
 
 export default {
-  namespace: "addressList",
+  namespace: "order",
   state: {
-    addressList: []
+    list: []
   },
 
   effects: {
-    *getAddressList(_, { call, put }) {
-      const response = yield call(queryAddressList, {
-        user: "5cef8d4cbe2bd83fd4644059"
-      });
+    *query({ payload }, { call, put }) {
+      const response = yield call(query, payload);
       if (response.status) {
         yield put({
           type: "updateState",
           payload: {
-            addressList: response.body
+            list: response.body
           }
         });
       }
+      return response;
     }
   },
 

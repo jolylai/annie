@@ -46,13 +46,34 @@ class Order extends Component {
     });
   };
 
+  componentDidShow = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: "order/query",
+      payload: {
+        user: "5cef8d4cbe2bd83fd4644059",
+        status: this.$router.params.type
+      }
+    });
+  };
+
   toggleActiveType = e => {
     this.setState({
       activeTypeIndex: e.currentTarget.dataset.type
     });
   };
 
+  renderOrder(data) {
+    return data.map(item => (
+      <View className="order-item" key={item._id}>
+        <View className="order-title">{`时间: ${item.createdAt}`}</View>
+        <View className="order-content">content</View>
+      </View>
+    ));
+  }
+
   render() {
+    const { list } = this.props;
     const { orderType, activeTypeIndex } = this.state;
     return (
       <View className="order-page">
@@ -68,7 +89,7 @@ class Order extends Component {
             </View>
           ))}
         </View>
-        <View className="empty" />
+        {list.length ? this.renderOrder(list) : <View className="empty" />}
       </View>
     );
   }

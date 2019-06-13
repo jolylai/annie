@@ -5,7 +5,8 @@ import user from "../pages/user/model";
 import login from "../pages/login/model";
 import addressList from "../pages/addressList/model";
 import addressUpdate from "../pages/addressUpdate/model";
-import detail from "../pages/detail/modal";
+import detail from "../pages/detail/model";
+import order from "../pages/order/model";
 
 export default [
   common,
@@ -15,5 +16,6 @@ export default [
   login,
   addressList,
   addressUpdate,
-  detail
+  detail,
+  order
 ];

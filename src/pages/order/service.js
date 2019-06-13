@@ -1,8 +1,8 @@
 import Request from "../../utils/request";
 
-export const queryAddressList = data =>
+export const query = data =>
   Request({
-    url: "/api/address/list",
+    url: "/api/order/list",
     method: "POST",
     data
   });

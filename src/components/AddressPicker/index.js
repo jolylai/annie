@@ -11,18 +11,60 @@ class AddressPicker extends Component {
     areas: []
   };
 
-  static getDerivedStateFromProps(props) {
-    console.log("get");
-    const { value } = props;
-    const [provinceId, cityId] = value;
+  static defaultProps = {
+    children: "省、市、区",
+    onChange() {}
+  };
+
+  componentDidMount() {
+    const { value } = this.props;
+    this.updateState(value);
+  }
+
+  componentDidUpdate(prevProps) {
+    const { value } = this.props;
+    if (JSON.stringify(value) !== JSON.stringify(prevProps.value)) {
+      this.updateState(value);
+    }
+  }
+
+  updateState(value) {
+    const [provinceId = "110000", cityId = "110100"] = value;
     const cities = address.cities[provinceId];
     const areas = address.areas[cityId];
-    return { cities, areas };
+    this.setState({ cities, areas });
   }
+
+  getAddress = value => {
+    const [provinceId, cityId, areaId] = value;
+    const addIndex = (item, index) => ({ ...item, index });
+    const provinceData = provinceId
+      ? address.provinces
+          .map(addIndex)
+          .find(province => province.id === provinceId)
+      : { name: "省", index: 0 };
+
+    const cityData = provinceId
+      ? address.cities[provinceId]
+          .map(addIndex)
+          .find(city => city.id === cityId)
+      : { name: "市", index: 0 };
+
+    const areaData = cityData.id
+      ? address.areas[cityData.id]
+          .map(addIndex)
+          .find(area => area.id === areaId)
+      : { name: "区", index: 0 };
+
+    return {
+      ids: [provinceData.id, cityData.id, areaData.id],
+      names: [provinceData.name, cityData.name, areaData.name],
+      indexs: [provinceData.index, cityData.index, areaData.index]
+    };
+  };
 
   onColumnchange = e => {
     const { column, value } = e.detail;
-    console.log("column: ", column);
     const { provinces, cities } = this.state;
     if (column === 0) {
       const curPrivinceId = provinces[value].id;
@@ -40,12 +82,22 @@ class AddressPicker extends Component {
   onChange = e => {
     const { value } = e.detail;
     const { onChange } = this.props;
-    onChange(value);
+    const { provinces, cities, areas } = this.state;
+
+    const [provinceIndex, cityIndex, areaIndex] = value;
+    const provinceData = provinces[provinceIndex];
+    const cityData = cities[cityIndex];
+    const areaData = areas[areaIndex];
+    onChange({
+      values: [provinceData.id, cityData.id, areaData.id],
+      names: [provinceData.name, cityData.name, areaData.name]
+    });
   };
 
   render() {
-    const { provinces, cities, areas, value } = this.state;
-
+    const { children, value } = this.props;
+    const { provinces, cities, areas } = this.state;
+    const { names, indexs } = this.getAddress(value);
     return (
       <Picker
         className="picker"
@@ -54,10 +106,10 @@ class AddressPicker extends Component {
         range={[provinces, cities, areas]}
         onColumnChange={this.onColumnchange}
         onChange={this.onChange}
-        value={value}
+        value={indexs}
       >
         <View className="label">
-          省、市、区
+          {names.join("、") || children}
           <View className="iconfont icon-more arrow" />
         </View>
       </Picker>

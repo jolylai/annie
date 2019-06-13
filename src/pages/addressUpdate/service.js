@@ -19,7 +19,7 @@ export const updateAddress = data =>
 // 删除地址
 export const removeAddress = data =>
   Request({
-    url: "/user/address/:id",
+    url: `/api/address/${data.id}`,
     method: "DELETE",
     data
   });
